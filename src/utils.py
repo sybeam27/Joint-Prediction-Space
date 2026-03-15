@@ -12,7 +12,7 @@ def set_seed(seed: int = 42) -> None:
 
 
 def get_device() -> torch.device:
-    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    return torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
 
 def ensure_dir(path: str) -> None:
