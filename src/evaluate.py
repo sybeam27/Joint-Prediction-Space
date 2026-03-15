@@ -13,13 +13,15 @@ from utils import get_device, ensure_dir
 
 
 def entropy_from_probs(probs: torch.Tensor, eps: float = 1e-12) -> torch.Tensor:
+    # 확률이 한 클래스에 몰리면 entropy 낮고, 여러 클래스에 퍼지면 entropy 높음
+    
     return -(probs * torch.log(probs + eps)).sum(dim=1)
 
 
 @torch.no_grad()
 def main():
-    ensure_dir("outputs")
-    ensure_dir("data")
+    ensure_dir("../outputs")
+    ensure_dir("../data")
 
     device = get_device()
     print(f"Using device: {device}")
@@ -30,7 +32,7 @@ def main():
     ])
 
     test_dataset = datasets.CIFAR10(
-        root="data",
+        root="../data",
         train=False,
         download=True,
         transform=transform_test
@@ -45,7 +47,7 @@ def main():
     )
 
     model = SimpleCNN(num_classes=10).to(device)
-    model_path = os.path.join("outputs", "best_cnn.pt")
+    model_path = os.path.join("../outputs", "best_cnn.pt")
 
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"Model not found: {model_path}")
@@ -63,7 +65,7 @@ def main():
         logits = model(images)
         probs = F.softmax(logits, dim=1)
 
-        confidences, preds = torch.max(probs, dim=1)
+        confidences, preds = torch.max(probs, dim=1)  # softmax 확률 중 가장 큰 값
         entropies = entropy_from_probs(probs)
         corrects = (preds == labels).long()
 
@@ -86,7 +88,7 @@ def main():
             sample_id += 1
 
     df = pd.DataFrame(rows)
-    save_path = os.path.join("outputs", "test_predictions.csv")
+    save_path = os.path.join("../outputs", "test_predictions.csv")
     df.to_csv(save_path, index=False)
 
     accuracy = df["correct"].mean()

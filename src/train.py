@@ -67,8 +67,8 @@ def evaluate(model, loader, criterion, device):
 
 def main():
     set_seed(42)
-    ensure_dir("outputs")
-    ensure_dir("data")
+    ensure_dir("../outputs")
+    ensure_dir("../data")
 
     device = get_device()
     print(f"Using device: {device}")
@@ -85,14 +85,14 @@ def main():
     ])
 
     train_dataset = datasets.CIFAR10(
-        root="data",
+        root="../data",
         train=True,
         download=True,
         transform=transform_train
     )
 
     test_dataset = datasets.CIFAR10(
-        root="data",
+        root="../data",
         train=False,
         download=True,
         transform=transform_test
@@ -120,7 +120,7 @@ def main():
 
     num_epochs = 10
     best_acc = 0.0
-    best_model_path = os.path.join("outputs", "best_cnn.pt")
+    best_model_path = os.path.join("../outputs", "best_cnn.pt")
 
     for epoch in range(num_epochs):
         train_loss, train_acc = train_one_epoch(
